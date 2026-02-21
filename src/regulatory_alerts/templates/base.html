@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Regulatory Alerts{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sec: { light: '#dbeafe', DEFAULT: '#0050B3', dark: '#1e3a5f' },
+                        cftc: { light: '#d1fae5', DEFAULT: '#006B3F', dark: '#064e3b' },
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <link rel="stylesheet" href="/static/css/custom.css">
+    {% block head %}{% endblock %}
+</head>
+<body class="h-full" hx-headers="{{ {'X-CSRFToken': get_csrf_token(request), 'X-Requested-With': 'XMLHttpRequest'} | tojson }}">
+
+    <!-- Mobile menu button -->
+    <div class="lg:hidden fixed top-0 left-0 right-0 z-40 bg-gray-900 px-4 py-3 flex items-center justify-between">
+        <span class="text-white font-bold text-lg">RegAlerts</span>
+        <button id="mobile-menu-btn" class="text-gray-300 hover:text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 transform -translate-x-full lg:translate-x-0 transition-transform duration-200">
+        <div class="flex flex-col h-full">
+            <!-- Logo -->
+            <div class="px-6 py-5 border-b border-gray-800">
+                <a href="/" class="flex items-center space-x-2">
+                    <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </svg>
+                    <span class="text-white font-bold text-lg">RegAlerts</span>
+                </a>
+                <p class="text-gray-500 text-xs mt-1">SEC &amp; CFTC Monitoring</p>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 px-3 py-4 space-y-1">
+                <a href="/"
+                   class="nav-link flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                          {% if active_page == 'dashboard' %}bg-gray-800 text-white{% else %}text-gray-400 hover:bg-gray-800 hover:text-white{% endif %}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="/alerts"
+                   class="nav-link flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                          {% if active_page == 'alerts' %}bg-gray-800 text-white{% else %}text-gray-400 hover:bg-gray-800 hover:text-white{% endif %}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    Alerts
+                </a>
+                <a href="/channels"
+                   class="nav-link flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                          {% if active_page == 'channels' %}bg-gray-800 text-white{% else %}text-gray-400 hover:bg-gray-800 hover:text-white{% endif %}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                    </svg>
+                    Channels
+                </a>
+                <a href="/notifications"
+                   class="nav-link flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                          {% if active_page == 'notifications' %}bg-gray-800 text-white{% else %}text-gray-400 hover:bg-gray-800 hover:text-white{% endif %}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+                    </svg>
+                    History
+                </a>
+                <a href="/topics"
+                   class="nav-link flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                          {% if active_page == 'topics' %}bg-gray-800 text-white{% else %}text-gray-400 hover:bg-gray-800 hover:text-white{% endif %}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                    Topics
+                </a>
+                <a href="/billing"
+                   class="nav-link flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                          {% if active_page == 'billing' %}bg-gray-800 text-white{% else %}text-gray-400 hover:bg-gray-800 hover:text-white{% endif %}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                    Billing
+                </a>
+
+                {% if user and user.is_admin %}
+                <a href="/admin"
+                   class="nav-link flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                          {% if active_page == 'admin' %}bg-gray-800 text-white{% else %}text-gray-400 hover:bg-gray-800 hover:text-white{% endif %}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    Admin
+                </a>
+                {% endif %}
+
+                <div class="pt-4 mt-4 border-t border-gray-800">
+                    <a href="/api/docs"
+                       class="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-800 hover:text-gray-400 transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                        </svg>
+                        API Docs
+                    </a>
+                    <a href="/about"
+                       class="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-800 hover:text-gray-400 transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        About
+                    </a>
+                </div>
+            </nav>
+
+            <!-- User / Account -->
+            {% if user %}
+            <div class="px-3 py-3 border-t border-gray-800">
+                <a href="/account"
+                   class="flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                          {% if active_page == 'account' %}bg-gray-800 text-white{% else %}text-gray-400 hover:bg-gray-800 hover:text-white{% endif %}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    </svg>
+                    <span class="truncate">{{ user.email }}</span>
+                </a>
+                <form method="POST" action="/logout" class="mt-1">
+                    <input type="hidden" name="csrftoken" value="{{ get_csrf_token(request) }}">
+                    <button type="submit"
+                            class="w-full flex items-center px-3 py-2 rounded-lg text-sm font-medium text-gray-500 hover:bg-gray-800 hover:text-gray-400 transition-colors">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        Sign Out
+                    </button>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Version -->
+            <div class="px-6 py-3 border-t border-gray-800">
+                <p class="text-gray-600 text-xs">v0.10.0-beta</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="lg:ml-64 min-h-screen pt-14 lg:pt-0">
+        <!-- Flash messages -->
+        <div id="flash-messages" class="px-6 pt-4">
+            {% if flash_message %}
+            <div class="flash-msg bg-{{ flash_type|default('green') }}-100 border-l-4 border-{{ flash_type|default('green') }}-500 text-{{ flash_type|default('green') }}-700 p-4 mb-4 rounded-r" role="alert">
+                <p>{{ flash_message }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="px-6 py-6">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

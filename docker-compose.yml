@@ -1,0 +1,49 @@
+services:
+  # --- PostgreSQL (production database) ---
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: regulatory_alerts
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # --- API server (includes background scheduler) ---
+  api:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/regulatory_alerts
+      DATABASE_URL_SYNC: postgresql+psycopg2://postgres:postgres@db:5432/regulatory_alerts
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/live')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    stop_grace_period: 35s
+    command: >
+      sh -c "
+        set -e &&
+        alembic upgrade head &&
+        python scripts/init_feeds.py &&
+        exec uvicorn regulatory_alerts.api:app --host 0.0.0.0 --port 8000 --workers 4 --timeout-grace-period 30
+      "
+
+volumes:
+  pgdata:

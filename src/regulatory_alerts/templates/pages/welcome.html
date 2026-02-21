@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome — Regulatory Alerts{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+    <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Welcome to E3, {{ user.email.split('@')[0] }}!</h1>
+        {% if user.is_founding_member %}
+        <div class="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-200">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-600 text-white">Founding Member #{{ founding_member_number }}</span>
+            <span class="text-sm text-blue-700">You have full Pro access during our beta</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Get started in 3 steps</h2>
+        <div class="space-y-4">
+            <!-- Step 1: Create account (always done) -->
+            <div class="flex items-start gap-3">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">Create your account</p>
+                    <p class="text-sm text-gray-500">Done — you're all set!</p>
+                </div>
+            </div>
+
+            <!-- Step 2: Set up first channel -->
+            <div class="flex items-start gap-3">
+                {% if has_channel %}
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">Set up your first alert channel</p>
+                    <p class="text-sm text-gray-500">Done — you have a notification channel configured.</p>
+                </div>
+                {% else %}
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span class="text-sm font-bold text-gray-500">2</span>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">Set up your first alert channel</p>
+                    <p class="text-sm text-gray-500 mb-2">Choose how you want to receive alerts:</p>
+                    <div class="flex flex-wrap gap-2">
+                        <a href="/channels" class="inline-flex items-center px-3 py-1.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+                            Email
+                        </a>
+                        {% if user.subscription_tier != 'free' %}
+                        <a href="/channels" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                            Webhook
+                        </a>
+                        <a href="/channels" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                            Slack
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Step 3: Choose topics -->
+            <div class="flex items-start gap-3">
+                {% if has_topics %}
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">Choose your topics</p>
+                    <p class="text-sm text-gray-500">Done — your topic preferences are set.</p>
+                </div>
+                {% else %}
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                    <span class="text-sm font-bold text-gray-500">3</span>
+                </div>
+                <div>
+                    <p class="font-medium text-gray-900">Choose your topics</p>
+                    <p class="text-sm text-gray-500 mb-2">Select which regulatory topics you want to monitor.</p>
+                    <a href="/topics" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                        Choose Topics
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    {% if has_channel and has_topics %}
+    <div class="bg-green-50 border border-green-200 rounded-xl p-6 text-center mb-6">
+        <svg class="w-12 h-12 mx-auto mb-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <h3 class="text-lg font-semibold text-green-900 mb-1">You're all set!</h3>
+        <p class="text-sm text-green-700">Your alerts are configured and ready to go.</p>
+    </div>
+    {% endif %}
+
+    <div class="text-center">
+        <a href="/" class="text-sm text-gray-500 hover:text-gray-700 transition-colors">Skip to Dashboard &rarr;</a>
+    </div>
+</div>
+{% endblock %}

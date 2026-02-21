@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}User Management — Admin{% endblock %}
+
+{% block content %}
+<div class="mb-6 flex items-center justify-between">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-900">User Management</h1>
+        <p class="text-sm text-gray-500 mt-1">{{ users_list|length }} registered users</p>
+    </div>
+    <a href="/admin" class="text-sm text-blue-600 hover:text-blue-800">&larr; Back to Admin</a>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tier</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Flags</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Channels</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+            {% for u in users_list %}
+            <tr class="{% if not u.is_active %}bg-red-50{% endif %}">
+                <td class="px-4 py-3 text-sm text-gray-600">{{ u.id }}</td>
+                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ u.email }}</td>
+                <td class="px-4 py-3">
+                    <form method="POST" action="/admin/users/{{ u.id }}/set-tier" class="inline">
+                        <input type="hidden" name="csrftoken" value="{{ get_csrf_token(request) }}">
+                        <select name="tier" onchange="this.form.submit()"
+                                class="text-xs border border-gray-300 rounded px-2 py-1
+                                       {% if u.subscription_tier == 'pro' %}bg-blue-50 text-blue-700
+                                       {% elif u.subscription_tier == 'team' %}bg-purple-50 text-purple-700
+                                       {% elif u.subscription_tier == 'enterprise' %}bg-yellow-50 text-yellow-700
+                                       {% else %}bg-gray-50 text-gray-700{% endif %}">
+                            <option value="free" {% if u.subscription_tier == 'free' %}selected{% endif %}>Free</option>
+                            <option value="pro" {% if u.subscription_tier == 'pro' %}selected{% endif %}>Pro</option>
+                            <option value="team" {% if u.subscription_tier == 'team' %}selected{% endif %}>Team</option>
+                            <option value="enterprise" {% if u.subscription_tier == 'enterprise' %}selected{% endif %}>Enterprise</option>
+                        </select>
+                    </form>
+                </td>
+                <td class="px-4 py-3">
+                    {% if u.is_active %}
+                    <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-green-100 text-green-800">Active</span>
+                    {% else %}
+                    <span class="inline-flex px-2 py-0.5 text-xs font-medium rounded-full bg-red-100 text-red-800">Inactive</span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3 text-xs space-x-1">
+                    {% if u.is_admin %}
+                    <span class="inline-flex px-2 py-0.5 font-medium rounded-full bg-indigo-100 text-indigo-800">Admin</span>
+                    {% endif %}
+                    {% if u.is_founding_member %}
+                    <span class="inline-flex px-2 py-0.5 font-medium rounded-full bg-amber-100 text-amber-800">Founder</span>
+                    {% endif %}
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-600">{{ channel_counts.get(u.id, 0) }}</td>
+                <td class="px-4 py-3 text-sm space-x-2">
+                    {% if u.id != user.id %}
+                    <form method="POST" action="/admin/users/{{ u.id }}/toggle-active" class="inline">
+                        <input type="hidden" name="csrftoken" value="{{ get_csrf_token(request) }}">
+                        <button type="submit" class="text-xs px-2 py-1 rounded border
+                                {% if u.is_active %}border-red-300 text-red-600 hover:bg-red-50
+                                {% else %}border-green-300 text-green-600 hover:bg-green-50{% endif %}">
+                            {% if u.is_active %}Deactivate{% else %}Activate{% endif %}
+                        </button>
+                    </form>
+                    <form method="POST" action="/admin/users/{{ u.id }}/set-admin" class="inline">
+                        <input type="hidden" name="csrftoken" value="{{ get_csrf_token(request) }}">
+                        <button type="submit" class="text-xs px-2 py-1 rounded border
+                                {% if u.is_admin %}border-gray-300 text-gray-600 hover:bg-gray-50
+                                {% else %}border-indigo-300 text-indigo-600 hover:bg-indigo-50{% endif %}">
+                            {% if u.is_admin %}Remove Admin{% else %}Make Admin{% endif %}
+                        </button>
+                    </form>
+                    {% else %}
+                    <span class="text-xs text-gray-400">You</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

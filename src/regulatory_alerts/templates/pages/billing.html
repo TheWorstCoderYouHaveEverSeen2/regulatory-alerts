@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Billing — Regulatory Alerts{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Billing</h1>
+
+    {% if beta_mode and user.is_founding_member %}
+    <!-- Founding Member Badge -->
+    <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-5 mb-6">
+        <div class="flex items-center gap-3 mb-2">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-600 text-white">Founding Member</span>
+        </div>
+        <p class="text-sm text-gray-700">
+            You have full Pro access during our beta period — no charge.
+            When billing begins, you'll receive <strong>{{ founding_member_discount }}% off</strong> the GA price as a founding member.
+        </p>
+        {% if user.beta_enrolled_at %}
+        <p class="text-xs text-gray-500 mt-2">
+            Member since {{ user.beta_enrolled_at.strftime('%B %d, %Y') }}
+        </p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Current Plan -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-semibold text-gray-900">Current Plan</h2>
+            {% if user.subscription_tier == 'pro' %}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">Pro</span>
+            {% elif user.subscription_tier == 'enterprise' %}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-800">Enterprise</span>
+            {% else %}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">Free</span>
+            {% endif %}
+        </div>
+
+        {% if user.subscription_status %}
+        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+            <span class="text-sm text-gray-500">Status</span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                {% if user.subscription_status == 'active' %}bg-green-100 text-green-800
+                {% elif user.subscription_status == 'past_due' %}bg-yellow-100 text-yellow-800
+                {% elif user.subscription_status == 'canceled' %}bg-red-100 text-red-800
+                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                {{ user.subscription_status|title }}
+            </span>
+        </div>
+        {% endif %}
+
+        <!-- Channel usage -->
+        <div class="mt-4">
+            <div class="flex items-center justify-between text-sm mb-2">
+                <span class="text-gray-500">Notification Channels</span>
+                <span class="font-medium text-gray-900">
+                    {{ channel_count }}{% if max_channels %} / {{ max_channels }}{% else %} (unlimited){% endif %}
+                </span>
+            </div>
+            {% if max_channels %}
+            <div class="w-full bg-gray-200 rounded-full h-2">
+                <div class="bg-blue-600 h-2 rounded-full" style="width: {{ (channel_count / max_channels * 100)|int }}%"></div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        {% if beta_mode and user.is_founding_member and user.subscription_tier == 'pro' %}
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">Beta Access</h2>
+        <p class="text-sm text-gray-500 mb-4">
+            You're enjoying full Pro features during the beta. No payment required until GA launch.
+        </p>
+        {% elif user.subscription_tier == 'free' %}
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">Upgrade to Pro</h2>
+        <p class="text-sm text-gray-500 mb-4">
+            Get unlimited channels and higher API rate limits for $79/month.
+        </p>
+        <form method="POST" action="/billing/checkout">
+            <input type="hidden" name="csrftoken" value="{{ get_csrf_token(request) }}">
+            <button type="submit"
+                    class="px-6 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+                Upgrade to Pro &mdash; $79/mo
+            </button>
+        </form>
+        {% elif user.subscription_tier == 'pro' %}
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">Manage Subscription</h2>
+        <p class="text-sm text-gray-500 mb-4">
+            Update your payment method, change plan, or cancel your subscription.
+        </p>
+        <form method="POST" action="/billing/portal">
+            <input type="hidden" name="csrftoken" value="{{ get_csrf_token(request) }}">
+            <button type="submit"
+                    class="px-6 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+                Manage Subscription
+            </button>
+        </form>
+        {% else %}
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">Enterprise Plan</h2>
+        <p class="text-sm text-gray-500 mb-4">
+            Your account is on the Enterprise plan. Contact support for billing questions.
+        </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

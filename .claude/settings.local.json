@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.sec.gov)",
+      "WebFetch(domain:www.cftc.gov)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(pip install:*)",
+      "Bash(set PYTHONPATH=src:*)",
+      "Bash(.)",
+      "Bash(python -m regulatory_alerts.cli:*)",
+      "Bash(PYTHONPATH=\"src:.\" python:*)",
+      "Bash(PYTHONPATH=\"$PWD/src:$PWD\" python:*)",
+      "Bash(PYTHONPATH=\"$PWD/src:$PWD\" python -m regulatory_alerts.cli:*)",
+      "Bash(python3:*)",
+      "Bash(export PYTHONPATH=\"$PWD/src:$PWD\":*)",
+      "Bash(python:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nRegulatory Alert SaaS v0.7.0 — full MVP with security audit + 20 bug fixes\n\nComplete SEC/CFTC regulatory monitoring micro-SaaS with AI-powered summaries,\nnotification system, Stripe billing, and comprehensive security hardening.\n\nKey capabilities:\n- SEC RSS + CFTC HTML scraping pipeline with deduplication\n- Claude Haiku AI summarization with topic classification\n- REST API + HTMX/Tailwind dashboard with session + API key auth\n- Webhook + email notifications with exponential backoff retry\n- Stripe billing integration \\(Free/Pro/Enterprise tiers\\)\n- Password reset with stateless signed tokens \\(single-use\\)\n- Topic subscriptions with per-user filtering\n\nSecurity hardening \\(20 bugs fixed in audit sprint\\):\n- SSRF prevention on webhook URLs \\(blocks private IPs, DNS rebinding\\)\n- XSS prevention in email notifications \\(html.escape on all fields\\)\n- Stripe webhook atomicity \\(500 on handler failure for retry\\)\n- CSRF protection on all session-auth POST routes\n- Auth rate limiting \\(login 5/min, register 3/min, forgot-password 3/min\\)\n- API channel ownership checks \\(both API key + session users\\)\n- bcrypt 72-byte truncation guard \\(password max-length 128\\)\n- Batch dedup to prevent IntegrityError on concurrent inserts\n- Single-commit-per-source in scheduler \\(prevents notification loss\\)\n- Input validation \\(email format, float parsing, null guards\\)\n\n332 tests passing across 15 test files.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git config:*)",
+      "Bash(start notepad:*)",
+      "Bash(pip show:*)"
+    ]
+  }
+}

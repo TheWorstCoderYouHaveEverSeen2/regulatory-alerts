@@ -1,0 +1,42 @@
+<tr class="alert-row border-b border-gray-100 hover:bg-gray-50 transition-colors">
+    <td class="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
+        {% if doc.published_at %}
+            {{ doc.published_at.strftime('%b %d, %Y') }}
+        {% else %}
+            —
+        {% endif %}
+    </td>
+    <td class="px-4 py-3">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+            {% if doc.agency == 'SEC' %}badge-sec{% else %}badge-cftc{% endif %}">
+            {{ doc.agency }}
+        </span>
+    </td>
+    <td class="px-4 py-3">
+        <a href="/alerts/{{ doc.id }}" class="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors">
+            {{ doc.title[:100] }}{% if doc.title|length > 100 %}...{% endif %}
+        </a>
+        {% if doc.document_type or (doc.alert and doc.alert.document_type) %}
+        <p class="text-xs text-gray-400 mt-0.5">{{ doc.alert.document_type if doc.alert and doc.alert.document_type else doc.document_type }}</p>
+        {% endif %}
+    </td>
+    <td class="px-4 py-3 text-center">
+        {% set score = doc.alert.relevance_score if doc.alert else None %}
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold border {{ score_class(score) }}">
+            {% if score is not none %}
+                {{ '%.0f'|format(score * 100) }}%
+            {% else %}
+                —
+            {% endif %}
+        </span>
+    </td>
+    <td class="px-4 py-3">
+        {% set topics = parse_topics(doc.alert) %}
+        {% for topic in topics[:3] %}
+        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-gray-100 text-gray-600 mr-1 mb-1">{{ topic }}</span>
+        {% endfor %}
+        {% if topics|length > 3 %}
+        <span class="text-xs text-gray-400">+{{ topics|length - 3 }}</span>
+        {% endif %}
+    </td>
+</tr>

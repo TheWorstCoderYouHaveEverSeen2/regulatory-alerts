@@ -1,0 +1,121 @@
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <h2 class="text-lg font-semibold text-gray-900 mb-4">Add Notification Channel</h2>
+
+    {% if errors %}
+    <div class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-4 rounded-r">
+        <ul class="list-disc list-inside text-sm">
+            {% for error in errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form hx-post="/channels"
+          hx-target="#channels-content"
+          hx-swap="innerHTML"
+          class="space-y-4">
+
+        <!-- Name -->
+        <div>
+            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Channel Name</label>
+            <input type="text" name="name" id="name" required
+                   value="{{ form_data.name if form_data else '' }}"
+                   placeholder="e.g. Compliance Slack, Team Email"
+                   class="w-full rounded-lg border-gray-300 bg-gray-50 text-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <!-- Channel Type -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Type</label>
+            <div class="flex gap-4">
+                <label class="flex items-center">
+                    <input type="radio" name="channel_type" value="webhook"
+                           {% if not form_data or form_data.channel_type == 'webhook' %}checked{% endif %}
+                           class="text-blue-600 focus:ring-blue-500">
+                    <span class="ml-2 text-sm text-gray-700">Webhook</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="channel_type" value="slack"
+                           {% if form_data and form_data.channel_type == 'slack' %}checked{% endif %}
+                           class="text-blue-600 focus:ring-blue-500">
+                    <span class="ml-2 text-sm text-gray-700">Slack</span>
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="channel_type" value="email"
+                           {% if form_data and form_data.channel_type == 'email' %}checked{% endif %}
+                           class="text-blue-600 focus:ring-blue-500">
+                    <span class="ml-2 text-sm text-gray-700">Email</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Webhook / Slack URL fields -->
+        <div id="webhook-fields" class="space-y-3 {% if form_data and form_data.channel_type == 'email' %}hidden{% endif %}">
+            <div>
+                <label for="webhook_url" class="block text-sm font-medium text-gray-700 mb-1">Webhook URL</label>
+                <input type="url" name="webhook_url" id="webhook_url"
+                       value="{{ form_data.webhook_url if form_data else '' }}"
+                       placeholder="https://hooks.slack.com/services/..."
+                       class="w-full rounded-lg border-gray-300 bg-gray-50 text-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div id="webhook-secret-group" {% if form_data and form_data.channel_type == 'slack' %}class="hidden"{% endif %}>
+                <label for="webhook_secret" class="block text-sm font-medium text-gray-700 mb-1">
+                    HMAC Secret <span class="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <input type="text" name="webhook_secret" id="webhook_secret"
+                       value="{{ form_data.webhook_secret if form_data else '' }}"
+                       placeholder="Used for X-Signature-256 header"
+                       class="w-full rounded-lg border-gray-300 bg-gray-50 text-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+        </div>
+
+        <!-- Email fields -->
+        <div id="email-fields" class="{% if not form_data or form_data.channel_type != 'email' %}hidden{% endif %}">
+            <label for="email_address" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+            <input type="email" name="email_address" id="email_address"
+                   value="{{ form_data.email_address if form_data else '' }}"
+                   placeholder="team@company.com"
+                   class="w-full rounded-lg border-gray-300 bg-gray-50 text-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <!-- Filters -->
+        <div class="pt-2 border-t border-gray-100">
+            <p class="text-sm font-medium text-gray-700 mb-3">Filters <span class="text-gray-400 font-normal">(optional)</span></p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div>
+                    <label for="min_relevance_score" class="block text-xs text-gray-500 mb-1">Min Relevance</label>
+                    <select name="min_relevance_score" id="min_relevance_score"
+                            class="w-full rounded-lg border-gray-300 bg-gray-50 text-sm py-2 px-3">
+                        <option value="">Any</option>
+                        <option value="0.3" {% if form_data and form_data.min_relevance_score == '0.3' %}selected{% endif %}>30%+</option>
+                        <option value="0.5" {% if form_data and form_data.min_relevance_score == '0.5' %}selected{% endif %}>50%+</option>
+                        <option value="0.7" {% if form_data and form_data.min_relevance_score == '0.7' %}selected{% endif %}>70%+</option>
+                        <option value="0.9" {% if form_data and form_data.min_relevance_score == '0.9' %}selected{% endif %}>90%+</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="agency_filter" class="block text-xs text-gray-500 mb-1">Agency</label>
+                    <select name="agency_filter" id="agency_filter"
+                            class="w-full rounded-lg border-gray-300 bg-gray-50 text-sm py-2 px-3">
+                        <option value="">All</option>
+                        <option value="SEC" {% if form_data and form_data.agency_filter == 'SEC' %}selected{% endif %}>SEC</option>
+                        <option value="CFTC" {% if form_data and form_data.agency_filter == 'CFTC' %}selected{% endif %}>CFTC</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="topic_filter" class="block text-xs text-gray-500 mb-1">Topics</label>
+                    <input type="text" name="topic_filter" id="topic_filter"
+                           value="{{ form_data.topic_filter if form_data else '' }}"
+                           placeholder="enforcement, rules"
+                           class="w-full rounded-lg border-gray-300 bg-gray-50 text-sm py-2 px-3">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit"
+                class="w-full px-4 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+            Create Channel
+        </button>
+    </form>
+</div>

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard — Regulatory Alerts{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+    <p class="text-sm text-gray-500 mt-1">System overview and management</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <p class="text-sm font-medium text-gray-500">Total Users</p>
+        <p class="text-2xl font-bold text-gray-900 mt-1">{{ total_users }}</p>
+        <div class="mt-2 text-xs text-gray-400">
+            {% for tier, count in users_by_tier.items() %}
+            <span class="inline-block mr-2">{{ tier }}: {{ count }}</span>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <p class="text-sm font-medium text-gray-500">Documents</p>
+        <p class="text-2xl font-bold text-gray-900 mt-1">{{ total_docs }}</p>
+        <p class="text-xs text-gray-400 mt-2">{{ total_alerts }} processed alerts</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <p class="text-sm font-medium text-gray-500">Channels</p>
+        <p class="text-2xl font-bold text-gray-900 mt-1">{{ total_channels }}</p>
+        <p class="text-xs text-gray-400 mt-2">{{ total_sources }} feed sources</p>
+    </div>
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <p class="text-sm font-medium text-gray-500">Founding Members</p>
+        <p class="text-2xl font-bold text-gray-900 mt-1">{{ founding_members }}</p>
+    </div>
+</div>
+
+<!-- Scheduler & System -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Scheduler Status -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Scheduler</h2>
+        <dl class="space-y-2">
+            <div class="flex justify-between">
+                <dt class="text-sm text-gray-500">Status</dt>
+                <dd class="text-sm font-medium
+                    {% if scheduler.status == 'success' %}text-green-600
+                    {% elif scheduler.status == 'error' %}text-red-600
+                    {% elif scheduler.status == 'running' %}text-blue-600
+                    {% else %}text-gray-600{% endif %}">
+                    {{ scheduler.status }}
+                </dd>
+            </div>
+            <div class="flex justify-between">
+                <dt class="text-sm text-gray-500">Total Cycles</dt>
+                <dd class="text-sm font-medium text-gray-900">{{ scheduler.total_cycles }}</dd>
+            </div>
+            <div class="flex justify-between">
+                <dt class="text-sm text-gray-500">Successful</dt>
+                <dd class="text-sm font-medium text-green-600">{{ scheduler.successful_cycles }}</dd>
+            </div>
+            <div class="flex justify-between">
+                <dt class="text-sm text-gray-500">Failed</dt>
+                <dd class="text-sm font-medium text-red-600">{{ scheduler.failed_cycles }}</dd>
+            </div>
+            <div class="flex justify-between">
+                <dt class="text-sm text-gray-500">Last Duration</dt>
+                <dd class="text-sm font-medium text-gray-900">{{ "%.2f"|format(scheduler.last_duration_seconds) if scheduler.last_duration_seconds else "N/A" }}s</dd>
+            </div>
+        </dl>
+    </div>
+
+    <!-- Errors & Uptime -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">System</h2>
+        <dl class="space-y-2">
+            <div class="flex justify-between">
+                <dt class="text-sm text-gray-500">Uptime</dt>
+                <dd class="text-sm font-medium text-gray-900">{{ "%.0f"|format(uptime) }}s</dd>
+            </div>
+            <div class="flex justify-between">
+                <dt class="text-sm text-gray-500">Total Errors</dt>
+                <dd class="text-sm font-medium text-red-600">{{ errors.total }}</dd>
+            </div>
+            {% for module, count in errors.by_module.items() %}
+            <div class="flex justify-between">
+                <dt class="text-sm text-gray-400 pl-4">{{ module }}</dt>
+                <dd class="text-sm text-gray-600">{{ count }}</dd>
+            </div>
+            {% endfor %}
+        </dl>
+        <div class="mt-4 flex space-x-3">
+            <a href="/admin/users" class="text-sm text-blue-600 hover:text-blue-800">Manage Users</a>
+            <a href="/admin/system" class="text-sm text-blue-600 hover:text-blue-800">System Details</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

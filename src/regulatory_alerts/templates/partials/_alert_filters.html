@@ -1,0 +1,74 @@
+<form id="alert-filters"
+      hx-get="/alerts"
+      hx-target="#alerts-content"
+      hx-swap="innerHTML"
+      hx-push-url="true"
+      class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+    <div class="flex flex-wrap items-end gap-4">
+        <div class="flex-1 min-w-[140px]">
+            <label for="agency" class="block text-xs font-medium text-gray-500 mb-1">Agency</label>
+            <select name="agency" id="agency"
+                    hx-trigger="change"
+                    class="w-full rounded-lg border-gray-300 bg-gray-50 text-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500">
+                <option value="" {% if not agency %}selected{% endif %}>All Agencies</option>
+                <option value="SEC" {% if agency == 'SEC' %}selected{% endif %}>SEC</option>
+                <option value="CFTC" {% if agency == 'CFTC' %}selected{% endif %}>CFTC</option>
+            </select>
+        </div>
+
+        <div class="flex-1 min-w-[140px]">
+            <label for="min_score" class="block text-xs font-medium text-gray-500 mb-1">Min Score</label>
+            <select name="min_score" id="min_score"
+                    hx-trigger="change"
+                    class="w-full rounded-lg border-gray-300 bg-gray-50 text-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500">
+                <option value="" {% if min_score is none %}selected{% endif %}>Any Score</option>
+                <option value="0.3" {% if min_score == 0.3 %}selected{% endif %}>30%+</option>
+                <option value="0.5" {% if min_score == 0.5 %}selected{% endif %}>50%+</option>
+                <option value="0.7" {% if min_score == 0.7 %}selected{% endif %}>70%+</option>
+                <option value="0.9" {% if min_score == 0.9 %}selected{% endif %}>90%+</option>
+            </select>
+        </div>
+
+        <div class="flex-1 min-w-[180px]">
+            <label for="topic" class="block text-xs font-medium text-gray-500 mb-1">Topic</label>
+            <input type="text" name="topic" id="topic"
+                   value="{{ topic }}"
+                   placeholder="e.g. enforcement, rulemaking"
+                   hx-trigger="keyup changed delay:500ms"
+                   class="w-full rounded-lg border-gray-300 bg-gray-50 text-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <input type="hidden" name="limit" value="{{ limit }}">
+        <input type="hidden" name="offset" value="0">
+
+        <div class="flex gap-2">
+            <button type="submit" class="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+                Filter
+            </button>
+            <a id="export-csv-btn"
+               href="/api/updates/export"
+               class="px-4 py-2 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors inline-flex items-center gap-1.5"
+               title="Download CSV">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Export
+            </a>
+        </div>
+    </div>
+</form>
+
+<script>
+    // Keep export link in sync with current filters
+    document.getElementById('alert-filters').addEventListener('change', function() {
+        const params = new URLSearchParams();
+        const agency = document.getElementById('agency').value;
+        const minScore = document.getElementById('min_score').value;
+        const topic = document.getElementById('topic').value;
+        if (agency) params.set('agency', agency);
+        if (minScore) params.set('min_score', minScore);
+        if (topic) params.set('topic', topic);
+        const qs = params.toString();
+        document.getElementById('export-csv-btn').href = '/api/updates/export' + (qs ? '?' + qs : '');
+    });
+</script>

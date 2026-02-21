@@ -1,0 +1,63 @@
+/* Agency badges */
+.badge-sec {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-cftc {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+
+/* Relevance score badges */
+.score-high {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border-color: #fca5a5;
+}
+
+.score-medium {
+    background-color: #fffbeb;
+    color: #92400e;
+    border-color: #fcd34d;
+}
+
+.score-low {
+    background-color: #f0fdf4;
+    color: #166534;
+    border-color: #86efac;
+}
+
+.score-none {
+    background-color: #f9fafb;
+    color: #6b7280;
+    border-color: #d1d5db;
+}
+
+/* Flash message fade out */
+.flash-msg {
+    transition: opacity 0.5s ease-out;
+}
+
+.flash-msg.fade-out {
+    opacity: 0;
+}
+
+/* Table row hover */
+.alert-row:hover {
+    background-color: #f9fafb;
+}
+
+/* Sidebar transition for mobile */
+.sidebar-open {
+    transform: translateX(0) !important;
+}
+
+/* HTMX loading indicator */
+.htmx-request .htmx-indicator {
+    display: inline-block;
+}
+
+.htmx-indicator {
+    display: none;
+}

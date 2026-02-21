@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Pricing — Regulatory Alerts{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto">
+
+    {% if beta_mode %}
+    <!-- Beta Banner -->
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl p-6 mb-8 text-white text-center">
+        <div class="text-3xl mb-2">Founding Member Beta</div>
+        <p class="text-blue-100 text-lg mb-1">Get full Pro access — completely free during beta.</p>
+        <p class="text-blue-200 text-sm">
+            Founding members lock in {{ founding_member_discount }}% off GA pricing when billing begins.
+            {% if beta_end_date %}Beta ends {{ beta_end_date }}.{% endif %}
+        </p>
+    </div>
+    {% endif %}
+
+    <div class="text-center mb-10">
+        <h1 class="text-3xl font-bold text-gray-900">
+            {% if beta_mode %}Choose Your Plan{% else %}Simple, Transparent Pricing{% endif %}
+        </h1>
+        <p class="text-gray-500 mt-3">Start free. Upgrade when you need more.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+        <!-- Free -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col">
+            <h3 class="text-lg font-semibold text-gray-900">Free</h3>
+            <div class="mt-4 mb-6">
+                <span class="text-4xl font-bold text-gray-900">$0</span>
+                <span class="text-gray-500 text-sm">/month</span>
+            </div>
+            <ul class="space-y-3 text-sm text-gray-600 flex-1">
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    SEC alerts only
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    1 email channel
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    10 API requests/minute
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-gray-300 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <span class="text-gray-400">No AI summaries</span>
+                </li>
+            </ul>
+            <div class="mt-6">
+                {% if user %}
+                <a href="/" class="block text-center px-6 py-2.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                    {% if user.subscription_tier == 'free' %}Current Plan{% else %}Dashboard{% endif %}
+                </a>
+                {% else %}
+                <a href="/register" class="block text-center px-6 py-2.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                    Get Started
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Pro -->
+        <div class="bg-white rounded-xl shadow-sm border-2 border-blue-600 p-6 flex flex-col relative">
+            <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                {% if beta_mode %}
+                <span class="bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full">FREE DURING BETA</span>
+                {% else %}
+                <span class="bg-gray-900 text-white text-xs font-medium px-3 py-1 rounded-full">Most Popular</span>
+                {% endif %}
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900">Pro</h3>
+            <div class="mt-4 mb-6">
+                {% if beta_mode %}
+                <span class="text-2xl font-bold text-gray-400 line-through">${{ pro_monthly_price }}</span>
+                <span class="text-4xl font-bold text-green-600 ml-2">Free</span>
+                <p class="text-sm text-green-600 mt-1">Free during beta</p>
+                {% else %}
+                <span class="text-4xl font-bold text-gray-900">${{ pro_monthly_price }}</span>
+                <span class="text-gray-500 text-sm">/month</span>
+                <p class="text-xs text-gray-400 mt-1">${{ pro_annual_price }}/mo billed annually</p>
+                {% endif %}
+            </div>
+            <ul class="space-y-3 text-sm text-gray-600 flex-1">
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Full SEC + CFTC alerts
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Unlimited channels (all types)
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    100 API requests/minute
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    200 AI summaries/month
+                </li>
+            </ul>
+            <div class="mt-6">
+                {% if beta_mode %}
+                    {% if user and user.subscription_tier == 'pro' %}
+                    <a href="/billing" class="block text-center px-6 py-2.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                        Current Plan
+                    </a>
+                    {% elif user %}
+                    <form method="POST" action="/billing/checkout">
+                        <input type="hidden" name="csrftoken" value="{{ get_csrf_token(request) }}">
+                        <button type="submit" class="w-full px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                            Join the Beta &mdash; Free
+                        </button>
+                    </form>
+                    {% else %}
+                    <a href="/register" class="block text-center px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                        Join the Beta &mdash; Free
+                    </a>
+                    {% endif %}
+                {% else %}
+                    {% if user and user.subscription_tier == 'pro' %}
+                    <a href="/billing" class="block text-center px-6 py-2.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                        Current Plan
+                    </a>
+                    {% elif user %}
+                    <form method="POST" action="/billing/checkout">
+                        <input type="hidden" name="csrftoken" value="{{ get_csrf_token(request) }}">
+                        <button type="submit" class="w-full px-6 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+                            Upgrade to Pro
+                        </button>
+                    </form>
+                    {% else %}
+                    <a href="/register" class="block text-center px-6 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+                        Get Started
+                    </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Team -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col opacity-75">
+            <h3 class="text-lg font-semibold text-gray-900">Team</h3>
+            <div class="mt-4 mb-6">
+                <span class="text-4xl font-bold text-gray-900">${{ team_monthly_price }}</span>
+                <span class="text-gray-500 text-sm">/month</span>
+                <p class="text-xs text-gray-400 mt-1">${{ team_annual_price }}/mo billed annually</p>
+            </div>
+            <ul class="space-y-3 text-sm text-gray-600 flex-1">
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Everything in Pro
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    5 team seats
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    1,000 AI summaries/month
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Priority support
+                </li>
+            </ul>
+            <div class="mt-6">
+                <span class="block text-center px-6 py-2.5 bg-gray-100 text-gray-500 text-sm font-medium rounded-lg">
+                    Coming Soon
+                </span>
+            </div>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col opacity-75">
+            <h3 class="text-lg font-semibold text-gray-900">Enterprise</h3>
+            <div class="mt-4 mb-6">
+                <span class="text-4xl font-bold text-gray-900">Custom</span>
+            </div>
+            <ul class="space-y-3 text-sm text-gray-600 flex-1">
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Everything in Team
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Unlimited AI summaries
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Custom integrations
+                </li>
+                <li class="flex items-center">
+                    <svg class="w-4 h-4 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Dedicated support
+                </li>
+            </ul>
+            <div class="mt-6">
+                <a href="mailto:sales@regulatory-alerts.local" class="block text-center px-6 py-2.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                    Contact Sales
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+# Core
+feedparser==6.0.11
+httpx==0.28.1
+anthropic>=0.43.0
+
+# Database — SQLite (default) + optional PostgreSQL
+sqlalchemy[asyncio]>=2.0.0
+aiosqlite>=0.20.0
+alembic>=1.14.0
+# PostgreSQL (used by Docker; optional for local SQLite dev)
+asyncpg>=0.30.0
+psycopg2-binary>=2.9.0
+
+# API
+fastapi>=0.115.0
+uvicorn[standard]>=0.34.0
+jinja2>=3.1.0
+python-multipart>=0.0.9
+
+# Configuration
+pydantic-settings>=2.0.0
+python-dotenv>=1.0.0
+
+# CLI
+click>=8.1.0
+rich>=13.0.0
+
+# Scheduling
+apscheduler>=3.10.0,<4.0.0
+
+# Testing
+pytest>=8.0.0
+pytest-asyncio>=0.24.0
+httpx  # already listed above, used by pytest for TestClient too
+
+# Rate limiting
+slowapi>=0.1.9
+
+# Auth
+bcrypt>=4.0.0
+itsdangerous>=2.1.0
+
+# Billing
+stripe>=11.0.0
+
+# Observability
+prometheus-client>=0.21.0
+
+# Utilities
+tenacity>=9.0.0

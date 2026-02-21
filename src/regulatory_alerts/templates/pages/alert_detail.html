@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}{{ doc.title[:60] }} — Regulatory Alerts{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav class="mb-4 text-sm">
+    <a href="/alerts" class="text-gray-500 hover:text-gray-700 transition-colors">&larr; Back to Alerts</a>
+</nav>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <!-- Header -->
+    <div class="px-6 py-5 border-b border-gray-200">
+        <div class="flex items-start justify-between gap-4">
+            <div class="flex-1">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-medium
+                        {% if doc.agency == 'SEC' %}badge-sec{% else %}badge-cftc{% endif %}">
+                        {{ doc.agency }}
+                    </span>
+                    {% if alert %}
+                    {% set score = alert.relevance_score %}
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold border {{ score_class(score) }}">
+                        {% if score is not none %}{{ '%.0f'|format(score * 100) }}% Relevance{% else %}Unscored{% endif %}
+                    </span>
+                    {% endif %}
+                    {% if doc.document_type or (alert and alert.document_type) %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600">
+                        {{ alert.document_type if alert and alert.document_type else doc.document_type }}
+                    </span>
+                    {% endif %}
+                </div>
+                <h1 class="text-xl font-bold text-gray-900">{{ doc.title }}</h1>
+                <p class="text-sm text-gray-500 mt-1">
+                    Published {{ doc.published_at.strftime('%B %d, %Y at %H:%M UTC') if doc.published_at else 'Unknown date' }}
+                </p>
+            </div>
+            <a href="{{ doc.url }}" target="_blank" rel="noopener noreferrer"
+               class="flex-shrink-0 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+                View Source &nearr;
+            </a>
+        </div>
+    </div>
+
+    {% if alert %}
+    <!-- AI Summary -->
+    <div class="px-6 py-5 border-b border-gray-200">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">AI Summary</h2>
+        <p class="text-gray-700 leading-relaxed">{{ alert.summary }}</p>
+    </div>
+
+    <!-- Key Points -->
+    {% if key_points %}
+    <div class="px-6 py-5 border-b border-gray-200">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Key Points</h2>
+        <ul class="space-y-2">
+            {% for point in key_points %}
+            <li class="flex items-start">
+                <svg class="w-5 h-5 text-blue-500 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/>
+                </svg>
+                <span class="text-gray-700 text-sm">{{ point }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <!-- Topics -->
+    {% if topics %}
+    <div class="px-6 py-5 border-b border-gray-200">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Topics</h2>
+        <div class="flex flex-wrap gap-2">
+            {% for topic in topics %}
+            <a href="/alerts?topic={{ topic }}"
+               class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
+                {{ topic }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Metadata -->
+    <div class="px-6 py-4 bg-gray-50">
+        <div class="flex flex-wrap gap-6 text-xs text-gray-500">
+            {% if alert.ai_model %}
+            <div>
+                <span class="font-medium">AI Model:</span> {{ alert.ai_model }}
+            </div>
+            {% endif %}
+            {% if alert.ai_cost_usd %}
+            <div>
+                <span class="font-medium">Cost:</span> ${{ '%.6f'|format(alert.ai_cost_usd) }}
+            </div>
+            {% endif %}
+            <div>
+                <span class="font-medium">Processed:</span> {{ alert.created_at.strftime('%b %d, %Y %H:%M UTC') if alert.created_at else '—' }}
+            </div>
+        </div>
+    </div>
+
+    {% elif is_free_tier %}
+    <!-- Free tier: AI summary gated -->
+    <div class="px-6 py-12 text-center">
+        <svg class="w-12 h-12 mx-auto mb-3 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+        </svg>
+        <p class="text-sm text-gray-600 font-medium">AI summary available on Pro plan</p>
+        <p class="text-xs text-gray-400 mt-1">Upgrade to Pro for AI-powered summaries, key points, and relevance scoring.</p>
+        <a href="/pricing" class="inline-block mt-3 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+            Upgrade to Pro
+        </a>
+    </div>
+    {% else %}
+    <!-- No AI summary yet -->
+    <div class="px-6 py-12 text-center text-gray-400">
+        <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+        </svg>
+        <p class="text-sm">This document hasn't been processed by AI yet.</p>
+        <p class="text-xs mt-1">Run <code class="bg-gray-100 px-1.5 py-0.5 rounded">fetch</code> to generate a summary.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

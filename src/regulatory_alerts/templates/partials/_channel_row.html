@@ -1,0 +1,57 @@
+<tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+    <td class="px-4 py-3">
+        <span class="text-sm font-medium text-gray-900">{{ channel.name }}</span>
+    </td>
+    <td class="px-4 py-3">
+        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+            {% if channel.channel_type == 'webhook' %}bg-violet-100 text-violet-800
+            {% elif channel.channel_type == 'slack' %}bg-purple-100 text-purple-800
+            {% else %}bg-sky-100 text-sky-800{% endif %}">
+            {{ channel.channel_type }}
+        </span>
+    </td>
+    <td class="px-4 py-3 text-sm text-gray-600">
+        {% if channel.channel_type in ('webhook', 'slack') %}
+            <span title="{{ channel.webhook_url }}">{{ channel.webhook_url[:40] }}{% if channel.webhook_url|length > 40 %}...{% endif %}</span>
+        {% else %}
+            {{ channel.email_address }}
+        {% endif %}
+    </td>
+    <td class="px-4 py-3 text-sm text-gray-500">
+        {% if channel.agency_filter %}
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs
+                {% if channel.agency_filter == 'SEC' %}badge-sec{% else %}badge-cftc{% endif %}">
+                {{ channel.agency_filter }}
+            </span>
+        {% endif %}
+        {% if channel.min_relevance_score %}
+            <span class="text-xs text-gray-400 ml-1">{{ '%.0f'|format(channel.min_relevance_score * 100) }}%+</span>
+        {% endif %}
+    </td>
+    <td class="px-4 py-3">
+        <button hx-post="/channels/{{ channel.id }}/toggle"
+                hx-target="#channels-content"
+                hx-swap="innerHTML"
+                class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium cursor-pointer transition-colors
+                    {% if channel.enabled %}bg-green-100 text-green-800 hover:bg-green-200{% else %}bg-gray-100 text-gray-500 hover:bg-gray-200{% endif %}">
+            {{ 'Active' if channel.enabled else 'Disabled' }}
+        </button>
+    </td>
+    <td class="px-4 py-3 text-right space-x-2">
+        {% if channel.enabled %}
+        <button hx-post="/channels/{{ channel.id }}/test"
+                hx-target="#channels-content"
+                hx-swap="innerHTML"
+                class="text-blue-500 hover:text-blue-700 text-sm font-medium transition-colors">
+            Test
+        </button>
+        {% endif %}
+        <button hx-delete="/channels/{{ channel.id }}"
+                hx-target="#channels-content"
+                hx-swap="innerHTML"
+                hx-confirm="Delete channel '{{ channel.name }}'? This cannot be undone."
+                class="text-red-500 hover:text-red-700 text-sm font-medium transition-colors">
+            Delete
+        </button>
+    </td>
+</tr>

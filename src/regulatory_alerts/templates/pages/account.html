@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Account — Regulatory Alerts{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl">
+    <h1 class="text-2xl font-bold text-gray-900 mb-6">Account Settings</h1>
+
+    <!-- Profile card -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Profile</h2>
+        <div class="space-y-3">
+            <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                <span class="text-sm text-gray-500">Email</span>
+                <span class="text-sm font-medium text-gray-900">{{ user.email }}</span>
+            </div>
+            <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                <span class="text-sm text-gray-500">Member since</span>
+                <span class="text-sm font-medium text-gray-900">{{ user.created_at.strftime('%B %d, %Y') if user.created_at else 'N/A' }}</span>
+            </div>
+            <div class="flex items-center justify-between py-2">
+                <span class="text-sm text-gray-500">Status</span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                    {% if user.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %}">
+                    {{ "Active" if user.is_active else "Disabled" }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscription card -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Subscription</h2>
+        <div class="space-y-3">
+            <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                <span class="text-sm text-gray-500">Plan</span>
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                    {% if user.subscription_tier == 'pro' %}bg-blue-100 text-blue-800
+                    {% elif user.subscription_tier == 'enterprise' %}bg-purple-100 text-purple-800
+                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                    {{ user.subscription_tier|title }}
+                </span>
+            </div>
+            {% if user.subscription_status %}
+            <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                <span class="text-sm text-gray-500">Status</span>
+                <span class="text-sm font-medium text-gray-900">{{ user.subscription_status|title }}</span>
+            </div>
+            {% endif %}
+            <div class="flex items-center justify-between py-2">
+                <span class="text-sm text-gray-500">Manage</span>
+                <a href="/billing" class="text-sm font-medium text-blue-600 hover:text-blue-800">
+                    {% if user.subscription_tier == 'free' %}Upgrade{% else %}Billing settings{% endif %}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Key card -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">API Key</h2>
+        <p class="text-sm text-gray-500 mb-4">
+            Use this key in the <code class="bg-gray-100 px-1.5 py-0.5 rounded text-xs">X-API-Key</code> header to authenticate API requests.
+        </p>
+
+        <div class="flex items-center gap-3">
+            <div class="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2.5 font-mono text-sm text-gray-800 select-all break-all" id="api-key-display">
+                {{ user.api_key }}
+            </div>
+            <button onclick="navigator.clipboard.writeText(document.getElementById('api-key-display').textContent.trim())"
+                    class="px-4 py-2.5 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors whitespace-nowrap">
+                Copy
+            </button>
+        </div>
+
+        <form method="POST" action="/account/regenerate-key" class="mt-4"
+              onsubmit="return confirm('Are you sure? Your current API key will stop working immediately.')">
+            <input type="hidden" name="csrftoken" value="{{ get_csrf_token(request) }}">
+            <button type="submit"
+                    class="px-4 py-2 text-sm font-medium text-red-600 border border-red-300 rounded-lg hover:bg-red-50 transition-colors">
+                Regenerate Key
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

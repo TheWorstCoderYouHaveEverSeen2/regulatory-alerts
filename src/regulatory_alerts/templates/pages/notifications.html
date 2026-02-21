@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Notification History — Regulatory Alerts{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Notification History</h1>
+    <p class="text-sm text-gray-500 mt-1">Delivery logs for all your notification channels</p>
+</div>
+
+<!-- Filters -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+    <form hx-get="/notifications"
+          hx-target="#notifications-content"
+          hx-swap="innerHTML"
+          hx-push-url="true"
+          class="flex flex-wrap gap-4 items-end">
+        <div>
+            <label for="channel_id" class="block text-xs text-gray-500 mb-1">Channel</label>
+            <select name="channel_id" id="channel_id"
+                    class="rounded-lg border-gray-300 bg-gray-50 text-sm py-2 px-3">
+                <option value="">All Channels</option>
+                {% for ch in channels %}
+                <option value="{{ ch.id }}" {% if channel_id == ch.id %}selected{% endif %}>
+                    {{ ch.name }} ({{ ch.channel_type }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label for="status" class="block text-xs text-gray-500 mb-1">Status</label>
+            <select name="status" id="status"
+                    class="rounded-lg border-gray-300 bg-gray-50 text-sm py-2 px-3">
+                <option value="">All</option>
+                <option value="sent" {% if status_filter == 'sent' %}selected{% endif %}>Sent</option>
+                <option value="failed" {% if status_filter == 'failed' %}selected{% endif %}>Failed</option>
+                <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>Pending</option>
+            </select>
+        </div>
+        <button type="submit"
+                class="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
+            Filter
+        </button>
+    </form>
+</div>
+
+<!-- Notification Logs Table -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div id="notifications-content" class="overflow-x-auto">
+        {% include "partials/_notifications_table.html" %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+<!-- HTMX fragment: notification logs table + pagination -->
+{% include "partials/_flash.html" %}
+
+<table class="w-full">
+    <thead>
+        <tr class="border-b border-gray-200">
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Channel</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alert</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Status</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Error</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-20">Retries</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr class="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+            <td class="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+                {{ log.created_at.strftime('%Y-%m-%d %H:%M') if log.created_at else 'N/A' }}
+            </td>
+            <td class="px-4 py-3">
+                <span class="text-sm font-medium text-gray-900">{{ log.channel.name if log.channel else 'Deleted' }}</span>
+                {% if log.channel %}
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium ml-1
+                    {% if log.channel.channel_type == 'webhook' %}bg-violet-100 text-violet-800
+                    {% elif log.channel.channel_type == 'slack' %}bg-purple-100 text-purple-800
+                    {% else %}bg-sky-100 text-sky-800{% endif %}">
+                    {{ log.channel.channel_type }}
+                </span>
+                {% endif %}
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-600">
+                {% if log.alert and log.alert.feed_document %}
+                    <a href="/alerts/{{ log.alert.feed_document.id }}"
+                       class="text-blue-600 hover:text-blue-800 hover:underline"
+                       title="{{ log.alert.feed_document.title }}">
+                        {{ log.alert.feed_document.title[:50] }}{% if log.alert.feed_document.title|length > 50 %}...{% endif %}
+                    </a>
+                {% else %}
+                    <span class="text-gray-400">Alert deleted</span>
+                {% endif %}
+            </td>
+            <td class="px-4 py-3">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+                    {% if log.status == 'sent' %}bg-green-100 text-green-800
+                    {% elif log.status == 'failed' %}bg-red-100 text-red-800
+                    {% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                    {{ log.status }}
+                </span>
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-500">
+                {% if log.error_message %}
+                    <span title="{{ log.error_message }}">{{ log.error_message[:60] }}{% if log.error_message|length > 60 %}...{% endif %}</span>
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            <td class="px-4 py-3 text-sm text-gray-500 text-center">
+                {{ log.retry_count }}
+            </td>
+        </tr>
+        {% else %}
+        <tr>
+            <td colspan="6" class="px-4 py-12 text-center text-gray-400">
+                <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+                <p class="text-sm">No notification logs yet.</p>
+                <p class="text-xs mt-1">Logs will appear here once notifications are sent.</p>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if total > limit %}
+<div class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 rounded-b-xl">
+    <div class="text-sm text-gray-500">
+        Showing {{ offset + 1 }}–{{ [offset + limit, total]|min }} of {{ total }}
+    </div>
+    <div class="flex items-center space-x-2">
+        {% if current_page > 1 %}
+        <a hx-get="/notifications?offset={{ offset - limit }}&limit={{ limit }}{% if channel_id %}&channel_id={{ channel_id }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+           hx-target="#notifications-content"
+           hx-swap="innerHTML"
+           hx-push-url="true"
+           class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+            Previous
+        </a>
+        {% endif %}
+
+        <span class="px-3 py-1.5 text-sm text-gray-500">
+            Page {{ current_page }} of {{ total_pages }}
+        </span>
+
+        {% if current_page < total_pages %}
+        <a hx-get="/notifications?offset={{ offset + limit }}&limit={{ limit }}{% if channel_id %}&channel_id={{ channel_id }}{% endif %}{% if status_filter %}&status={{ status_filter }}{% endif %}"
+           hx-target="#notifications-content"
+           hx-swap="innerHTML"
+           hx-push-url="true"
+           class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+            Next
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

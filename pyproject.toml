@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "regulatory-alerts"
+version = "0.1.0"
+description = "AI-powered regulatory alert monitoring for financial services"
+requires-python = ">=3.11"
+
+[project.scripts]
+regulatory-alerts = "regulatory_alerts.cli:cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]

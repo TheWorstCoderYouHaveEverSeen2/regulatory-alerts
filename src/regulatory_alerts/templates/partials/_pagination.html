@@ -1,0 +1,30 @@
+<div class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 rounded-b-xl">
+    <div class="text-sm text-gray-500">
+        Showing {{ offset + 1 }}–{{ [offset + limit, total]|min }} of {{ total }}
+    </div>
+    <div class="flex items-center space-x-2">
+        {% if current_page > 1 %}
+        <a hx-get="/alerts?offset={{ offset - limit }}&limit={{ limit }}{% if agency %}&agency={{ agency }}{% endif %}{% if topic %}&topic={{ topic }}{% endif %}{% if min_score is not none %}&min_score={{ min_score }}{% endif %}"
+           hx-target="#alerts-content"
+           hx-swap="innerHTML"
+           hx-push-url="true"
+           class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+            Previous
+        </a>
+        {% endif %}
+
+        <span class="px-3 py-1.5 text-sm text-gray-500">
+            Page {{ current_page }} of {{ total_pages }}
+        </span>
+
+        {% if current_page < total_pages %}
+        <a hx-get="/alerts?offset={{ offset + limit }}&limit={{ limit }}{% if agency %}&agency={{ agency }}{% endif %}{% if topic %}&topic={{ topic }}{% endif %}{% if min_score is not none %}&min_score={{ min_score }}{% endif %}"
+           hx-target="#alerts-content"
+           hx-swap="innerHTML"
+           hx-push-url="true"
+           class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+            Next
+        </a>
+        {% endif %}
+    </div>
+</div>

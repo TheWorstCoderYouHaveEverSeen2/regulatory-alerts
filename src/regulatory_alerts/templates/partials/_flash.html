@@ -1,0 +1,7 @@
+{% if flash_message %}
+<div id="flash-messages" hx-swap-oob="innerHTML">
+    <div class="flash-msg bg-{{ flash_type|default('green') }}-100 border-l-4 border-{{ flash_type|default('green') }}-500 text-{{ flash_type|default('green') }}-700 p-4 mb-4 rounded-r" role="alert">
+        <p>{{ flash_message }}</p>
+    </div>
+</div>
+{% endif %}

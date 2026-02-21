@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Alerts — Regulatory Alerts{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Regulatory Alerts</h1>
+    <p class="text-sm text-gray-500 mt-1">Browse and filter SEC &amp; CFTC regulatory filings</p>
+</div>
+
+{% include "partials/_alert_filters.html" %}
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div id="alerts-content" class="overflow-x-auto">
+        {% include "partials/_alerts_table_body.html" %}
+    </div>
+</div>
+{% endblock %}
