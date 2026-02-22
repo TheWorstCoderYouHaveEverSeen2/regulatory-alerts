@@ -10,8 +10,35 @@ _DEFAULT_DB_PATH = _PROJECT_ROOT / "data" / "regulatory_alerts.db"
 
 class Settings(BaseSettings):
     # Database — defaults to SQLite; set to postgresql+asyncpg://... for Postgres
+    # Railway auto-provides DATABASE_URL as plain postgresql:// — we auto-convert below
     DATABASE_URL: str = f"sqlite+aiosqlite:///{_DEFAULT_DB_PATH}"
     DATABASE_URL_SYNC: str = f"sqlite:///{_DEFAULT_DB_PATH}"
+
+    def model_post_init(self, __context) -> None:
+        """Auto-convert plain postgresql:// URLs to driver-specific formats.
+
+        Railway and other PaaS providers give you a plain postgresql:// URL.
+        Our app needs asyncpg for async and psycopg2 for sync.
+        """
+        url = self.DATABASE_URL
+        # If DATABASE_URL is plain postgresql:// (no driver specified),
+        # auto-generate both async and sync variants
+        if url.startswith("postgresql://") and "+asyncpg" not in url:
+            object.__setattr__(
+                self, "DATABASE_URL",
+                url.replace("postgresql://", "postgresql+asyncpg://", 1),
+            )
+            object.__setattr__(
+                self, "DATABASE_URL_SYNC",
+                url.replace("postgresql://", "postgresql+psycopg2://", 1),
+            )
+        # If DATABASE_URL already has a driver but SYNC is still SQLite default,
+        # derive SYNC from async URL
+        elif "+asyncpg" in url and self.DATABASE_URL_SYNC.startswith("sqlite"):
+            object.__setattr__(
+                self, "DATABASE_URL_SYNC",
+                url.replace("postgresql+asyncpg://", "postgresql+psycopg2://", 1),
+            )
 
     # Anthropic API
     ANTHROPIC_API_KEY: str = ""
