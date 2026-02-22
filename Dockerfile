@@ -30,4 +30,4 @@ HEALTHCHECK --interval=10s --timeout=5s --retries=3 --start-period=10s \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health/live')" || exit 1
 
 # Run migrations, seed feeds, then start the API server
-CMD ["sh", "-c", "set -e && alembic upgrade head && python scripts/init_feeds.py && exec uvicorn regulatory_alerts.api:app --host 0.0.0.0 --port 8000 --workers 4 --timeout-grace-period 30"]
+CMD ["sh", "-c", "set -e && alembic upgrade head && python scripts/init_feeds.py && exec uvicorn regulatory_alerts.api:app --host 0.0.0.0 --port 8000 --workers 4 --timeout-graceful-shutdown 30"]
