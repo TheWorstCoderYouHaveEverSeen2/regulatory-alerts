@@ -21,7 +21,7 @@ def upgrade() -> None:
         sa.Column("id", sa.Integer(), primary_key=True),
         sa.Column("name", sa.String(100), nullable=False),
         sa.Column("channel_type", sa.String(20), nullable=False),
-        sa.Column("enabled", sa.Boolean(), server_default=sa.text("1")),
+        sa.Column("enabled", sa.Boolean(), server_default=sa.text("true")),
         sa.Column("webhook_url", sa.Text(), nullable=True),
         sa.Column("webhook_secret", sa.String(200), nullable=True),
         sa.Column("email_address", sa.String(255), nullable=True),

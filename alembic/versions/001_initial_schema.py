@@ -23,7 +23,7 @@ def upgrade() -> None:
         sa.Column("agency", sa.String(50), nullable=False),
         sa.Column("feed_url", sa.Text(), nullable=False),
         sa.Column("feed_type", sa.String(20), nullable=False, server_default="rss"),
-        sa.Column("enabled", sa.Boolean(), server_default=sa.text("1")),
+        sa.Column("enabled", sa.Boolean(), server_default=sa.text("true")),
         sa.Column("last_checked_at", sa.DateTime(), nullable=True),
         sa.Column("created_at", sa.DateTime(), server_default=sa.func.now()),
         sa.Column("updated_at", sa.DateTime(), server_default=sa.func.now()),

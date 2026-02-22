@@ -17,10 +17,10 @@ depends_on: Union[str, Sequence[str], None] = None
 
 def upgrade() -> None:
     # Sprint 8 feature: enabled column on notification_channels (was missing migration)
-    op.add_column("notification_channels", sa.Column("enabled", sa.Boolean(), nullable=False, server_default="1"))
+    op.add_column("notification_channels", sa.Column("enabled", sa.Boolean(), nullable=False, server_default="true"))
 
     # Sprint 9: Beta / founding member columns on users
-    op.add_column("users", sa.Column("is_founding_member", sa.Boolean(), nullable=False, server_default="0"))
+    op.add_column("users", sa.Column("is_founding_member", sa.Boolean(), nullable=False, server_default="false"))
     op.add_column("users", sa.Column("beta_enrolled_at", sa.DateTime(), nullable=True))
 
 
