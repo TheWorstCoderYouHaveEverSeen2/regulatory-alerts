@@ -16,6 +16,7 @@ ENV/
 
 # Environment variables
 .env
+SECRET_KEY.txt
 
 # IDE
 .idea/
