@@ -16,7 +16,7 @@ from fastapi import APIRouter, Depends, Form, Request
 from regulatory_alerts.csrf import validate_csrf
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
 from regulatory_alerts.config import get_settings
@@ -216,9 +216,22 @@ def register_submit(
         # Beta mode: grant Pro tier + founding member status to new signups
         if settings.BETA_MODE:
             from datetime import datetime, timezone
-            user.subscription_tier = "pro"
-            user.is_founding_member = True
-            user.beta_enrolled_at = datetime.now(timezone.utc)
+
+            # Check founding member cap before granting status
+            founding_count = session.scalar(
+                select(func.count(User.id)).where(User.is_founding_member == True)  # noqa: E712
+            ) or 0
+            cap = settings.FOUNDING_MEMBER_CAP
+
+            if cap <= 0 or founding_count < cap:
+                # Spots available — grant founding member status + Pro tier
+                user.subscription_tier = "pro"
+                user.is_founding_member = True
+                user.beta_enrolled_at = datetime.now(timezone.utc)
+            else:
+                # Cap reached — still register but as free tier (beta full)
+                user.subscription_tier = "free"
+                user.is_founding_member = False
 
         session.add(user)
         try:

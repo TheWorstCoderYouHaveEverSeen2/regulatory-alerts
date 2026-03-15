@@ -100,6 +100,49 @@
         </div>
     </div>
 
+    <!-- Audit Trail / Review -->
+    <div class="px-6 py-5 border-b border-gray-200">
+        <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">Compliance Review</h2>
+        {% if existing_review %}
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div class="flex items-center gap-2 mb-2">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span class="text-sm font-medium text-green-800">Reviewed</span>
+                <span class="text-xs text-green-600 ml-auto">{{ existing_review.reviewed_at.strftime('%b %d, %Y %H:%M UTC') }}</span>
+            </div>
+            <div class="text-sm text-green-700">
+                <span class="font-medium">Status:</span>
+                <span class="capitalize">{{ existing_review.status | replace('_', ' ') }}</span>
+            </div>
+            {% if existing_review.notes %}
+            <div class="mt-2 text-sm text-green-700">
+                <span class="font-medium">Notes:</span> {{ existing_review.notes }}
+            </div>
+            {% endif %}
+        </div>
+        {% else %}
+        <form method="POST" action="/alerts/{{ doc.id }}/review" class="space-y-3">
+            <input type="hidden" name="csrftoken" value="{{ get_csrf_token(request) }}">
+            <div class="flex items-center gap-3">
+                <select name="status" class="text-sm border border-gray-300 rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    <option value="acknowledged">Acknowledged</option>
+                    <option value="no_action_required">No Action Required</option>
+                    <option value="action_taken">Action Taken</option>
+                    <option value="escalated">Escalated</option>
+                </select>
+                <button type="submit"
+                        class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
+                    Mark as Reviewed
+                </button>
+            </div>
+            <textarea name="notes" rows="2" placeholder="Optional notes for compliance record..."
+                      class="w-full text-sm border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+        </form>
+        {% endif %}
+    </div>
+
     {% elif is_free_tier %}
     <!-- Free tier: AI summary gated -->
     <div class="px-6 py-12 text-center">

@@ -22,6 +22,20 @@
             {% if beta_mode %}Choose Your Plan{% else %}Simple, Transparent Pricing{% endif %}
         </h1>
         <p class="text-gray-500 mt-3">Start free. Upgrade when you need more.</p>
+
+        {% if not beta_mode %}
+        <!-- Annual/Monthly toggle -->
+        <div class="mt-6 inline-flex items-center bg-gray-100 rounded-lg p-1">
+            <button id="btn-monthly" onclick="setPricing('monthly')"
+                    class="px-4 py-2 text-sm font-medium rounded-md transition-colors bg-white text-gray-900 shadow-sm">
+                Monthly
+            </button>
+            <button id="btn-annual" onclick="setPricing('annual')"
+                    class="px-4 py-2 text-sm font-medium rounded-md transition-colors text-gray-500">
+                Annual <span class="text-green-600 text-xs ml-1">Save 20%</span>
+            </button>
+        </div>
+        {% endif %}
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -80,9 +94,12 @@
                 <span class="text-4xl font-bold text-green-600 ml-2">Free</span>
                 <p class="text-sm text-green-600 mt-1">Free during beta</p>
                 {% else %}
-                <span class="text-4xl font-bold text-gray-900">${{ pro_monthly_price }}</span>
+                <span id="pro-price" class="text-4xl font-bold text-gray-900"
+                      data-monthly="{{ pro_monthly_price }}" data-annual="{{ pro_annual_price }}">${{ pro_monthly_price }}</span>
                 <span class="text-gray-500 text-sm">/month</span>
-                <p class="text-xs text-gray-400 mt-1">${{ pro_annual_price }}/mo billed annually</p>
+                <p id="pro-subtext" class="text-xs text-gray-400 mt-1"
+                   data-monthly="${{ pro_annual_price }}/mo billed annually"
+                   data-annual="billed annually — save ${{ (pro_monthly_price - pro_annual_price) * 12 }}/yr">${{ pro_annual_price }}/mo billed annually</p>
                 {% endif %}
             </div>
             <ul class="space-y-3 text-sm text-gray-600 flex-1">
@@ -146,9 +163,12 @@
         <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col opacity-75">
             <h3 class="text-lg font-semibold text-gray-900">Team</h3>
             <div class="mt-4 mb-6">
-                <span class="text-4xl font-bold text-gray-900">${{ team_monthly_price }}</span>
+                <span id="team-price" class="text-4xl font-bold text-gray-900"
+                      data-monthly="{{ team_monthly_price }}" data-annual="{{ team_annual_price }}">${{ team_monthly_price }}</span>
                 <span class="text-gray-500 text-sm">/month</span>
-                <p class="text-xs text-gray-400 mt-1">${{ team_annual_price }}/mo billed annually</p>
+                <p id="team-subtext" class="text-xs text-gray-400 mt-1"
+                   data-monthly="${{ team_annual_price }}/mo billed annually"
+                   data-annual="billed annually — save ${{ (team_monthly_price - team_annual_price) * 12 }}/yr">${{ team_annual_price }}/mo billed annually</p>
             </div>
             <ul class="space-y-3 text-sm text-gray-600 flex-1">
                 <li class="flex items-center">
@@ -207,4 +227,36 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function setPricing(mode) {
+    const btnMonthly = document.getElementById('btn-monthly');
+    const btnAnnual = document.getElementById('btn-annual');
+    const activeClasses = 'bg-white text-gray-900 shadow-sm';
+    const inactiveClasses = 'text-gray-500';
+
+    // Toggle button styles
+    if (mode === 'annual') {
+        btnMonthly.className = btnMonthly.className.replace(activeClasses, inactiveClasses);
+        btnAnnual.className = btnAnnual.className.replace(inactiveClasses, activeClasses);
+    } else {
+        btnMonthly.className = btnMonthly.className.replace(inactiveClasses, activeClasses);
+        btnAnnual.className = btnAnnual.className.replace(activeClasses, inactiveClasses);
+    }
+
+    // Update prices
+    ['pro', 'team'].forEach(function(plan) {
+        var priceEl = document.getElementById(plan + '-price');
+        var subtextEl = document.getElementById(plan + '-subtext');
+        if (priceEl) {
+            priceEl.textContent = '$' + priceEl.dataset[mode];
+        }
+        if (subtextEl) {
+            subtextEl.textContent = subtextEl.dataset[mode];
+        }
+    });
+}
+</script>
 {% endblock %}

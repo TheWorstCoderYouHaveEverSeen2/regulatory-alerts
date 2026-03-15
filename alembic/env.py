@@ -16,6 +16,7 @@ from regulatory_alerts.models.alert import ProcessedAlert  # noqa: F401
 from regulatory_alerts.models.notification import NotificationChannel, NotificationLog  # noqa: F401
 from regulatory_alerts.models.user import User  # noqa: F401
 from regulatory_alerts.models.stripe_event import StripeEvent  # noqa: F401
+from regulatory_alerts.models.review import AlertReview  # noqa: F401
 
 config = context.config
 

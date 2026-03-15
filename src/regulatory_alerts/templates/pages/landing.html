@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Regulatory Alerts — AI-Powered SEC &amp; CFTC Monitoring</title>
+    <title>E3 Regulatory Alert — AI-Powered SEC &amp; CFTC Monitoring for Compliance Teams</title>
+    <meta name="description" content="The only self-serve regulatory alert tool with AI summaries for SEC and CFTC filings. Built for compliance officers at firms without a Bloomberg Terminal budget.">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-white">
@@ -15,7 +16,7 @@
                 <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                 </svg>
-                <span class="font-bold text-xl text-gray-900">RegAlerts</span>
+                <span class="font-bold text-xl text-gray-900">E3 RegAlerts</span>
             </div>
             <div class="flex items-center space-x-3">
                 <a href="/pricing" class="px-4 py-2 text-gray-700 text-sm font-medium hover:text-gray-900 transition-colors">
@@ -25,99 +26,192 @@
                     Sign In
                 </a>
                 <a href="/register" class="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors">
-                    Get Started
+                    Start Free Beta
                 </a>
             </div>
         </div>
     </header>
 
+    <!-- Beta Banner -->
+    <div class="bg-blue-600 text-white text-center py-2.5 text-sm font-medium">
+        Founding Member Beta — Get full Pro access free. Limited to {{ founding_member_cap }} spots.
+        <a href="/register" class="underline ml-1">Join now</a>
+    </div>
+
     <!-- Hero -->
     <section class="max-w-5xl mx-auto px-6 py-20">
         <div class="text-center max-w-3xl mx-auto">
+            <p class="text-blue-600 font-semibold text-sm uppercase tracking-wide mb-4">For Compliance Teams Without a Bloomberg Budget</p>
             <h1 class="text-4xl sm:text-5xl font-bold text-gray-900 leading-tight">
-                AI-Powered Regulatory Monitoring
+                SEC &amp; CFTC Alerts With<br>AI-Powered Summaries
             </h1>
-            <p class="text-lg text-gray-500 mt-6 leading-relaxed">
-                Never miss a critical SEC or CFTC filing again. Get AI-generated summaries,
-                relevance scoring, and instant notifications delivered to your team.
+            <p class="text-lg text-gray-500 mt-6 leading-relaxed max-w-2xl mx-auto">
+                Stop manually checking government RSS feeds. E3 monitors 8 regulatory sources,
+                generates plain-English summaries, scores relevance, and pushes alerts to
+                your email, Slack, or webhook — in under 30 minutes.
             </p>
             <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="/register" class="px-6 py-3 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors">
                     Create Free Account
                 </a>
-                <a href="/api/docs" class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                    API Documentation
+                <a href="/pricing" class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                    See Pricing
                 </a>
+            </div>
+            <p class="text-xs text-gray-400 mt-4">No credit card required during beta. Pro features included.</p>
+        </div>
+    </section>
+
+    <!-- The Problem -->
+    <section class="bg-gray-50 border-y border-gray-100">
+        <div class="max-w-5xl mx-auto px-6 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-2xl font-bold text-gray-900">The Gap in Regulatory Monitoring</h2>
+                <p class="text-gray-500 mt-3 max-w-2xl mx-auto">
+                    Bloomberg charges $32K/year. Compliance.ai starts at $6K. Free RSS feeds give you raw XML
+                    with no context. E3 sits in the middle — purpose-built for compliance teams at a price that
+                    doesn't require procurement approval.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="text-3xl font-bold text-red-500 mb-1">$32K<span class="text-base font-normal text-gray-400">/yr</span></div>
+                    <div class="text-sm font-medium text-gray-600">Bloomberg Terminal</div>
+                    <p class="text-xs text-gray-400 mt-2">Built for traders, not compliance. 95% of features you'll never use.</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 border-2 border-blue-500 relative">
+                    <div class="absolute -top-3 left-4 bg-blue-500 text-white text-xs font-bold px-2 py-0.5 rounded">YOU ARE HERE</div>
+                    <div class="text-3xl font-bold text-gray-900 mb-1">$79<span class="text-base font-normal text-gray-400">/mo</span></div>
+                    <div class="text-sm font-medium text-gray-600">E3 RegAlerts Pro</div>
+                    <p class="text-xs text-gray-400 mt-2">AI summaries, SEC+CFTC, push alerts. Self-serve in 5 minutes.</p>
+                </div>
+                <div class="bg-white rounded-xl p-6 border border-gray-200">
+                    <div class="text-3xl font-bold text-gray-400 mb-1">$0</div>
+                    <div class="text-sm font-medium text-gray-600">Raw SEC RSS Feeds</div>
+                    <p class="text-xs text-gray-400 mt-2">No summaries, no scoring, no alerts. You parse XML yourself.</p>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Features -->
-    <section class="bg-gray-50 border-y border-gray-100">
-        <div class="max-w-5xl mx-auto px-6 py-16">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="text-center">
-                    <div class="bg-blue-50 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 110-2 1 1 0 010 2z"/>
-                        </svg>
-                    </div>
-                    <h3 class="font-semibold text-gray-900 mb-2">8 Feed Sources</h3>
-                    <p class="text-sm text-gray-500">
-                        Monitors 6 SEC RSS feeds and 2 CFTC press pages, automatically checking for new filings every 30 minutes.
-                    </p>
-                </div>
-
-                <div class="text-center">
-                    <div class="bg-amber-50 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                    </div>
-                    <h3 class="font-semibold text-gray-900 mb-2">AI Summaries</h3>
-                    <p class="text-sm text-gray-500">
-                        Claude generates concise summaries, extracts key points, assigns relevance scores, and categorizes each filing by topic.
-                    </p>
-                </div>
-
-                <div class="text-center">
-                    <div class="bg-green-50 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                        </svg>
-                    </div>
-                    <h3 class="font-semibold text-gray-900 mb-2">Push Notifications</h3>
-                    <p class="text-sm text-gray-500">
-                        Webhook and email notifications with per-channel filters for agency, relevance threshold, and topic matching.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Tech -->
     <section class="max-w-5xl mx-auto px-6 py-16">
-        <div class="text-center max-w-2xl mx-auto">
-            <h2 class="text-2xl font-bold text-gray-900 mb-4">Built for Compliance Teams</h2>
-            <p class="text-gray-500 mb-8">
-                REST API with optional authentication, Docker deployment, and PostgreSQL support.
-                Run it on-premise or in the cloud.
-            </p>
-            <div class="flex flex-wrap justify-center gap-3">
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Python</span>
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">FastAPI</span>
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Claude AI</span>
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">PostgreSQL</span>
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Docker</span>
-                <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">REST API</span>
+        <div class="text-center mb-12">
+            <h2 class="text-2xl font-bold text-gray-900">What You Get</h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="bg-blue-50 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 110-2 1 1 0 010 2z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">8 Regulatory Sources</h3>
+                <p class="text-sm text-gray-500">
+                    6 SEC RSS feeds (press releases, litigation, rules, speeches) + 2 CFTC pages.
+                    Checked every 30 minutes.
+                </p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-amber-50 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">AI Summaries &amp; Scoring</h3>
+                <p class="text-sm text-gray-500">
+                    Claude AI reads each filing and generates a plain-English summary,
+                    key points, relevance score, and topic classification.
+                </p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-green-50 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Push to Email, Slack, Webhook</h3>
+                <p class="text-sm text-gray-500">
+                    Filter by agency, topic, and relevance threshold. Only get alerts that matter to your practice area.
+                </p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-purple-50 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">Topic Subscriptions</h3>
+                <p class="text-sm text-gray-500">
+                    Subscribe to specific regulatory topics. Your dashboard auto-filters to show only what you care about.
+                </p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-red-50 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">CSV Export</h3>
+                <p class="text-sm text-gray-500">
+                    Export filtered alerts as CSV for compliance audit trails, team review, or record-keeping.
+                </p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-indigo-50 w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                    </svg>
+                </div>
+                <h3 class="font-semibold text-gray-900 mb-2">REST API</h3>
+                <p class="text-sm text-gray-500">
+                    Full API with authentication, rate limiting, and filtering. Build your own integrations.
+                </p>
             </div>
         </div>
     </section>
+
+    <!-- CTA -->
+    <section class="bg-gray-900 text-white">
+        <div class="max-w-5xl mx-auto px-6 py-16 text-center">
+            <h2 class="text-2xl font-bold mb-4">Join the Founding Member Beta</h2>
+            <p class="text-gray-400 mb-8 max-w-xl mx-auto">
+                Full Pro access, free during beta. Founding members lock in 40% off when we go GA.
+                Limited to {{ founding_member_cap }} spots.
+            </p>
+            <a href="/register" class="inline-block px-8 py-3 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors">
+                Create Free Account
+            </a>
+        </div>
+    </section>
+
+    <!-- Disclaimer -->
+    <div class="bg-gray-50 border-t border-gray-200">
+        <div class="max-w-5xl mx-auto px-6 py-4">
+            <p class="text-xs text-gray-400 text-center leading-relaxed">
+                E3 Regulatory Alert is an information service. Summaries are generated by AI and may be
+                incomplete or inaccurate. This is NOT legal advice, compliance advice, or an official
+                interpretation of any regulatory filing. Users are responsible for verifying all
+                regulatory information and consulting qualified legal counsel.
+            </p>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer class="border-t border-gray-100">
-        <div class="max-w-5xl mx-auto px-6 py-6 text-center text-sm text-gray-400">
-            Regulatory Alerts v0.3.0
+        <div class="max-w-5xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between text-sm text-gray-400">
+            <span>E3 Regulatory Alert v0.11.0-beta</span>
+            <div class="flex items-center space-x-4 mt-2 sm:mt-0">
+                <a href="/terms" class="hover:text-gray-600 transition-colors">Terms</a>
+                <a href="/privacy" class="hover:text-gray-600 transition-colors">Privacy</a>
+                <a href="/api/docs" class="hover:text-gray-600 transition-colors">API</a>
+                <a href="/pricing" class="hover:text-gray-600 transition-colors">Pricing</a>
+            </div>
         </div>
     </footer>
 

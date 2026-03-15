@@ -89,6 +89,14 @@
                     </svg>
                     Topics
                 </a>
+                <a href="/reviews"
+                   class="nav-link flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                          {% if active_page == 'reviews' %}bg-gray-800 text-white{% else %}text-gray-400 hover:bg-gray-800 hover:text-white{% endif %}">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                    </svg>
+                    Reviews
+                </a>
                 <a href="/billing"
                    class="nav-link flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                           {% if active_page == 'billing' %}bg-gray-800 text-white{% else %}text-gray-400 hover:bg-gray-800 hover:text-white{% endif %}">
@@ -152,9 +160,10 @@
             </div>
             {% endif %}
 
-            <!-- Version -->
+            <!-- Version + Disclaimer -->
             <div class="px-6 py-3 border-t border-gray-800">
-                <p class="text-gray-600 text-xs">v0.10.0-beta</p>
+                <p class="text-gray-600 text-xs">v0.11.0-beta</p>
+                <p class="text-gray-700 text-xs mt-2 leading-relaxed">AI summaries may be incomplete. Not legal or compliance advice. <a href="/terms" class="underline hover:text-gray-400">Terms</a> &middot; <a href="/privacy" class="underline hover:text-gray-400">Privacy</a></p>
             </div>
         </div>
     </aside>
@@ -176,5 +185,6 @@
     </main>
 
     <script src="/static/js/app.js"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

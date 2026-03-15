@@ -14,6 +14,7 @@ from regulatory_alerts.auth import get_current_user
 from regulatory_alerts.config import get_settings
 from regulatory_alerts.database.session import get_sync_session_factory
 from regulatory_alerts.models import (
+    AlertReview,
     FeedDocument,
     FeedSource,
     NotificationChannel,
@@ -291,6 +292,17 @@ def alert_detail(request: Request, alert_id: int):
             raise HTTPException(status_code=404, detail="Alert not found")
 
         is_free = user.subscription_tier == "free"
+
+        # Check if user has already reviewed this alert
+        existing_review = None
+        if doc.alert:
+            existing_review = session.scalars(
+                select(AlertReview).where(
+                    AlertReview.user_id == user.id,
+                    AlertReview.alert_id == doc.alert.id,
+                )
+            ).first()
+
         return templates.TemplateResponse(request, "pages/alert_detail.html", {
             "active_page": "alerts",
             "doc": doc,
@@ -300,7 +312,160 @@ def alert_detail(request: Request, alert_id: int):
             "key_points": [] if is_free else (doc.alert.key_points if doc.alert and doc.alert.key_points else []),
             "user": user,
             "is_free_tier": is_free,
+            "existing_review": existing_review,
         })
+
+
+# --- Alert Review (Audit Trail) ---
+
+@router.post("/alerts/{alert_id}/review", response_class=HTMLResponse)
+def alert_review(
+    request: Request,
+    alert_id: int,
+    status: str = Form("acknowledged"),
+    notes: str = Form(""),
+    _csrf: None = Depends(validate_csrf),
+):
+    """Record a compliance review for a regulatory alert."""
+    user = _require_login(request)
+    if user is None:
+        return RedirectResponse(url="/login", status_code=302)
+
+    valid_statuses = {"acknowledged", "no_action_required", "action_taken", "escalated"}
+    if status not in valid_statuses:
+        raise HTTPException(status_code=400, detail="Invalid review status")
+
+    SessionFactory = get_sync_session_factory()
+    with SessionFactory() as session:
+        doc = session.get(FeedDocument, alert_id, options=[joinedload(FeedDocument.alert)])
+        if not doc or not doc.alert:
+            raise HTTPException(status_code=404, detail="Alert not found")
+
+        # Check if already reviewed by this user
+        existing = session.scalars(
+            select(AlertReview).where(
+                AlertReview.user_id == user.id,
+                AlertReview.alert_id == doc.alert.id,
+            )
+        ).first()
+        if existing:
+            # Update existing review
+            existing.status = status
+            existing.notes = notes.strip() or None
+            from datetime import datetime, timezone
+            existing.reviewed_at = datetime.now(timezone.utc)
+        else:
+            review = AlertReview(
+                user_id=user.id,
+                alert_id=doc.alert.id,
+                status=status,
+                notes=notes.strip() or None,
+            )
+            session.add(review)
+
+        session.commit()
+
+    return RedirectResponse(url=f"/alerts/{alert_id}", status_code=302)
+
+
+@router.get("/reviews", response_class=HTMLResponse)
+def reviews_page(
+    request: Request,
+    limit: int = Query(50, ge=1, le=200),
+    offset: int = Query(0, ge=0),
+):
+    """Compliance audit log — all reviews by the current user."""
+    user = _require_login(request)
+    if user is None:
+        return RedirectResponse(url="/login", status_code=302)
+
+    SessionFactory = get_sync_session_factory()
+    with SessionFactory() as session:
+        conditions = [AlertReview.user_id == user.id]
+        total = session.scalar(
+            select(func.count(AlertReview.id)).where(*conditions)
+        ) or 0
+
+        reviews = session.scalars(
+            select(AlertReview)
+            .options(
+                joinedload(AlertReview.alert).joinedload(ProcessedAlert.feed_document),
+            )
+            .where(*conditions)
+            .order_by(desc(AlertReview.reviewed_at))
+            .offset(offset)
+            .limit(limit)
+        ).unique().all()
+
+        total_pages = max(1, (total + limit - 1) // limit)
+        current_page = (offset // limit) + 1
+
+        return templates.TemplateResponse(request, "pages/reviews.html", {
+            "active_page": "reviews",
+            "reviews": reviews,
+            "total": total,
+            "total_pages": total_pages,
+            "current_page": current_page,
+            "limit": limit,
+            "offset": offset,
+            "user": user,
+        })
+
+
+@router.get("/reviews/export")
+def reviews_export(request: Request):
+    """Export all compliance reviews as CSV for audit trail."""
+    import csv
+    import io
+
+    user = _require_login(request)
+    if user is None:
+        return RedirectResponse(url="/login", status_code=302)
+
+    SessionFactory = get_sync_session_factory()
+    with SessionFactory() as session:
+        reviews = session.scalars(
+            select(AlertReview)
+            .options(
+                joinedload(AlertReview.alert).joinedload(ProcessedAlert.feed_document),
+            )
+            .where(AlertReview.user_id == user.id)
+            .order_by(desc(AlertReview.reviewed_at))
+        ).unique().all()
+
+        output = io.StringIO()
+        # BOM for Excel compatibility
+        output.write('\ufeff')
+        writer = csv.writer(output)
+        writer.writerow([
+            "Review Date", "Status", "Notes",
+            "Alert Title", "Agency", "Published Date",
+            "Relevance Score", "Document URL",
+        ])
+
+        for review in reviews:
+            alert = review.alert
+            doc = alert.feed_document if alert else None
+            writer.writerow([
+                review.reviewed_at.strftime('%Y-%m-%d %H:%M:%S UTC') if review.reviewed_at else '',
+                review.status.replace('_', ' ').title(),
+                review.notes or '',
+                doc.title if doc else '',
+                doc.agency if doc else '',
+                doc.published_at.strftime('%Y-%m-%d') if doc and doc.published_at else '',
+                f"{alert.relevance_score:.0%}" if alert and alert.relevance_score else '',
+                doc.url if doc else '',
+            ])
+
+        from fastapi.responses import StreamingResponse
+        output.seek(0)
+        return StreamingResponse(
+            iter([output.getvalue()]),
+            media_type="text/csv",
+            headers={
+                "Content-Disposition": f"attachment; filename=compliance_reviews_{user.id}.csv",
+            },
+        )
 
 
 # --- Channels (user-scoped) ---
@@ -717,10 +882,27 @@ def topics_update(
         })
 
 
-# --- About ---
+# --- About / Legal ---
 
 @router.get("/about", response_class=HTMLResponse)
 def about_page(request: Request):
     return templates.TemplateResponse(request, "pages/landing.html", {
         "active_page": "about",
+        "founding_member_cap": settings.FOUNDING_MEMBER_CAP,
+    })
+
+
+@router.get("/terms", response_class=HTMLResponse)
+def terms_page(request: Request):
+    """Terms of Service — public, no login required."""
+    return templates.TemplateResponse(request, "pages/terms.html", {
+        "active_page": "terms",
+    })
+
+
+@router.get("/privacy", response_class=HTMLResponse)
+def privacy_page(request: Request):
+    """Privacy Policy — public, no login required."""
+    return templates.TemplateResponse(request, "pages/privacy.html", {
+        "active_page": "privacy",
     })

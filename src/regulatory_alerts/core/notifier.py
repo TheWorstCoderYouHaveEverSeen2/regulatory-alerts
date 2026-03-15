@@ -238,7 +238,12 @@ def _build_email_body(alert: ProcessedAlert, doc: FeedDocument) -> tuple[str, st
     <p><a href="{safe_url}" style="color: #0066cc;">View Original Document</a></p>
   </div>
   <p style="font-size: 11px; color: #999; text-align: center; margin-top: 12px;">
-    Sent by Regulatory Alerts SaaS
+    Sent by E3 Regulatory Alert SaaS
+  </p>
+  <p style="font-size: 10px; color: #bbb; text-align: center; margin-top: 4px; line-height: 1.4;">
+    This is an information service. AI summaries may be incomplete or inaccurate.
+    Not legal advice, compliance advice, or an official interpretation of any regulatory filing.
+    Verify all information with original sources.
   </p>
 </body>
 </html>"""

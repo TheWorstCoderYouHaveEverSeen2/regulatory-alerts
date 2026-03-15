@@ -56,6 +56,11 @@ class Settings(BaseSettings):
     API_KEYS: str = ""  # Comma-separated valid API keys; empty = no auth required
 
     # Email / SMTP (for email notifications)
+    # For Postmark: SMTP_HOST=smtp.postmarkapp.com, SMTP_PORT=587,
+    #   SMTP_USER=<your Postmark Server API Token>, SMTP_PASSWORD=<same token>
+    #   SMTP_FROM=<verified sender address in Postmark>
+    # For AWS SES: SMTP_HOST=email-smtp.us-east-1.amazonaws.com, SMTP_PORT=587,
+    #   SMTP_USER=<SES SMTP username>, SMTP_PASSWORD=<SES SMTP password>
     SMTP_HOST: str = ""
     SMTP_PORT: int = 587
     SMTP_USER: str = ""
@@ -88,6 +93,7 @@ class Settings(BaseSettings):
     BETA_MODE: bool = True  # When True, all new signups get Pro tier free
     BETA_END_DATE: str = ""  # ISO date string, e.g. "2026-05-20". Empty = no end date set yet
     FOUNDING_MEMBER_DISCOUNT_PCT: int = 40  # Percentage off GA price for beta users
+    FOUNDING_MEMBER_CAP: int = 50  # Max founding member spots (0 = unlimited)
 
     # Updated pricing (display only — Stripe Price IDs control actual billing)
     PRO_MONTHLY_PRICE: int = 79
