@@ -42,7 +42,7 @@ services:
         set -e &&
         alembic upgrade head &&
         python scripts/init_feeds.py &&
-        exec uvicorn regulatory_alerts.api:app --host 0.0.0.0 --port 8000 --workers 4 --timeout-grace-period 30
+        exec uvicorn regulatory_alerts.api:app --host 0.0.0.0 --port 8000 --workers ${WEB_CONCURRENCY:-4} --timeout-graceful-shutdown 30
       "
 
 volumes:
